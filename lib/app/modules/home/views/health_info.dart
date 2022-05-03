@@ -35,7 +35,7 @@ class HealthInfo extends GetView<HealthController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               GestureDetector(
-                                onTap: (){
+                                onTap: () {
                                   ThemeService().switchTheme();
                                 },
                                 child: Text(
@@ -51,25 +51,38 @@ class HealthInfo extends GetView<HealthController> {
                                       (BuildContext context, int index) {
                                     return index == 0
                                         ? getList(
-                                            percentageIndicator: obj
-                                                    .healthDataList[index]
-                                                    .value /
-                                                1500,
+                                            percentageIndicator:
+                                                (obj.healthDataList[index]
+                                                                .value /
+                                                            1500) >
+                                                        1
+                                                    ? 1
+                                                    : (obj.healthDataList[index]
+                                                            .value /
+                                                        1500),
                                             headerCount: obj
                                                 .healthDataList[index].value
                                                 .toString())
-                                        : getList(
-                                            header: "Calories Burned",
-                                            endingPoint: 1000,
-                                            image: AppImages.kCal,
-                                            startingPoint: 0,
-                                            percentageIndicator: obj
-                                                    .healthDataList[index]
-                                                    .value /
-                                                1000,
-                                            headerCount: obj
-                                                .healthDataList[index].value
-                                                .toString());
+                                        : index == 1
+                                            ? getList(
+                                                header: "Calories Burned",
+                                                endingPoint: 1000,
+                                                image: AppImages.kCal,
+                                                startingPoint: 0,
+                                                percentageIndicator: (obj
+                                                                .healthDataList[
+                                                                    index]
+                                                                .value /
+                                                            1000) >
+                                                        1
+                                                    ? 1
+                                                    : (obj.healthDataList[index]
+                                                            .value /
+                                                        1000),
+                                                headerCount: obj
+                                                    .healthDataList[index].value
+                                                    .toString())
+                                            : Container();
                                   }),
                             ],
                           ),
