@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:health/health.dart';
 import 'package:healthapp/service/dataservice.dart';
@@ -5,17 +7,36 @@ import 'package:healthapp/utils/permissions.dart';
 
 enum AppState { Loading, Failed, Success, AuthenticationFailed, Initial }
 
-class HealthController extends GetxController {
+class HealthController extends GetxController with WidgetsBindingObserver {
   Rx<AppState> appState = AppState.Initial.obs;
+  Rx<Brightness> brightness =
+      Rx(SchedulerBinding.instance!.window.platformBrightness);
   RxList<HealthDataPoint> healthDataList = RxList([]);
   RxDouble totalSteps = RxDouble(0);
-  RxDouble totalCaloriesBurn =RxDouble(0);
+  RxDouble totalCaloriesBurn = RxDouble(0);
 
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance?.addObserver(this);
+    // _brightness?.value = WidgetsBinding.instance?.window?.platformBrightness!;
     print("Intialize Controller Called");
     fetchData();
+  }
+
+  // @override
+  // void dispose() {
+  //
+  //   // TODO: implement dispose
+  //   super.dispose();
+  // }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+
+    brightness.value = WidgetsBinding.instance?.window.platformBrightness ??
+        SchedulerBinding.instance!.window.platformBrightness;
   }
 
   @override
@@ -24,7 +45,9 @@ class HealthController extends GetxController {
   }
 
   @override
-  void onClose() {}
+  void onClose() {
+    WidgetsBinding.instance?.removeObserver(this);
+  }
 
   Future<void> fetchData() async {
     appState(AppState.Loading);
@@ -41,22 +64,21 @@ class HealthController extends GetxController {
         List<HealthDataPoint> healthData =
             await DataService.getHealthDataPoints();
 
-          // print("Health Data is.....");
-          // print(healthData);
+        // print("Health Data is.....");
+        // print(healthData);
 
-        if (healthData.length>=0) {
-
-          for(int i=0;i<healthData.length;i++){
-            if(healthData[i].type==HealthDataType.STEPS){
-              totalSteps.value+=healthData[i].value.abs();
-            }else{
-              totalCaloriesBurn.value+=healthData[i].value.abs();
+        if (healthData.length >= 0) {
+          for (int i = 0; i < healthData.length; i++) {
+            if (healthData[i].type == HealthDataType.STEPS) {
+              totalSteps.value += healthData[i].value.abs();
+            } else {
+              totalCaloriesBurn.value += healthData[i].value.abs();
             }
           }
           appState(AppState.Success);
 
           // healthDataList(healthData);
-        }else{
+        } else {
           appState(AppState.Success);
         }
       } catch (error) {

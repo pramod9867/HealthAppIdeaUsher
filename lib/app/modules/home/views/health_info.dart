@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'package:get/get.dart';
 import 'package:health/health.dart';
@@ -10,83 +11,189 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class HealthInfo extends GetView<HealthController> {
   late final width;
+  late final HealthController obj;
 
   @override
   Widget build(BuildContext context) {
     // width = MediaQuery.of(context).size.width;
-    final obj = Get.put(HealthController());
+    obj = Get.put(HealthController());
+
+    print("Build Called");
     return Scaffold(
       body: Obx(
         () => Container(
-
-          child: obj.appState.value == AppState.Loading ||
-                  obj.appState.value == AppState.Initial
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.black,
-                  ),
-                )
-              : obj.appState.value == AppState.AuthenticationFailed
+          child: obj.brightness.value == Brightness.dark
+              ? obj.appState.value == AppState.Loading ||
+                      obj.appState.value == AppState.Initial
                   ? Center(
-                      child: Container(child: Text("Authentication Failed !!",style: TextStyle(
-                        fontFamily: 'Nunito'
-                      ),)))
-                  : obj.appState.value == AppState.Failed
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                      ),
+                    )
+                  : obj.appState.value == AppState.AuthenticationFailed
                       ? Center(
-                          child: Container(child: Text("Something Went Wrong",style: TextStyle(
-                              fontFamily: 'Nunito'
-                          ),),),)
-                      : Container(
-                          // height: SizeConfig.screenHeight,
-                          margin: EdgeInsets.symmetric(
-                              vertical: 40, horizontal: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  ThemeService().switchTheme();
-                                },
+                          child: Container(
+                              child: Text(
+                          "Authentication Failed !!",
+                          style: TextStyle(fontFamily: 'Nunito'),
+                        )))
+                      : obj.appState.value == AppState.Failed
+                          ? Center(
+                              child: Container(
                                 child: Text(
-                                  "Hi !",
-                                  style: TextStyle(
-                                      fontSize: 32, fontFamily: 'Nunito'),
+                                  "Something Went Wrong",
+                                  style: TextStyle(fontFamily: 'Nunito'),
                                 ),
                               ),
-                              ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: 2,
-                                  shrinkWrap: true,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return index==0
-                                        ? getList(
-                                            percentageIndicator:
-                                                (obj.totalSteps.value/
+                            )
+                          : Container(
+                              // height: SizeConfig.screenHeight,
+                              decoration:
+                                  BoxDecoration(color: Color(0xff323232)),
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 40, horizontal: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      ThemeService().switchTheme();
+                                    },
+                                    child: Text(
+                                      "Hi !",
+                                      style: TextStyle(
+                                          fontSize: 32, fontFamily: 'Nunito'),
+                                    ),
+                                  ),
+                                  ListView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: 2,
+                                      shrinkWrap: true,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return index == 0
+                                            ? getList(
+                                                isDark: true,
+                                                percentageIndicator: (obj
+                                                                .totalSteps
+                                                                .value /
                                                             1500) >
                                                         1
                                                     ? 1
                                                     : (obj.totalSteps.value /
                                                         1500),
-                                            headerCount: obj.totalSteps.value.toStringAsFixed(2))
-                                        : index==1
+                                                headerCount: obj
+                                                    .totalSteps.value
+                                                    .toStringAsFixed(2))
+                                            : index == 1
+                                                ? getList(
+                                                    isDark: true,
+                                                    header: "Calories Burned",
+                                                    endingPoint: 1000,
+                                                    image: AppImages.kCal,
+                                                    startingPoint: 0,
+                                                    percentageIndicator:
+                                                        (obj.totalCaloriesBurn
+                                                                        .value /
+                                                                    1000) >
+                                                                1
+                                                            ? 1
+                                                            : (obj.totalCaloriesBurn
+                                                                    .value /
+                                                                1000),
+                                                    headerCount: obj
+                                                        .totalCaloriesBurn.value
+                                                        .toStringAsFixed(2))
+                                                : Container();
+                                      }),
+                                ],
+                              ),
+                            )
+              : obj.appState.value == AppState.Loading ||
+                      obj.appState.value == AppState.Initial
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                      ),
+                    )
+                  : obj.appState.value == AppState.AuthenticationFailed
+                      ? Center(
+                          child: Container(
+                              child: Text(
+                          "Authentication Failed !!",
+                          style: TextStyle(fontFamily: 'Nunito'),
+                        )))
+                      : obj.appState.value == AppState.Failed
+                          ? Center(
+                              child: Container(
+                                child: Text(
+                                  "Something Went Wrong",
+                                  style: TextStyle(fontFamily: 'Nunito'),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              // height: SizeConfig.screenHeight,
+
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 40, horizontal: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      ThemeService().switchTheme();
+                                    },
+                                    child: Text(
+                                      "Hi !",
+                                      style: TextStyle(
+                                          fontSize: 32, fontFamily: 'Nunito'),
+                                    ),
+                                  ),
+                                  ListView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: 2,
+                                      shrinkWrap: true,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return index == 0
                                             ? getList(
-                                                header: "Calories Burned",
-                                                endingPoint: 1000,
-                                                image: AppImages.kCal,
-                                                startingPoint: 0,
-                                                percentageIndicator: (obj.totalCaloriesBurn.value /
-                                                            1000) >
+                                                isDark: false,
+                                                percentageIndicator: (obj
+                                                                .totalSteps
+                                                                .value /
+                                                            1500) >
                                                         1
                                                     ? 1
-                                                    : (obj.totalCaloriesBurn.value /
-                                                        1000),
-                                                headerCount: obj.totalCaloriesBurn.value.toStringAsFixed(2))
-                                            : Container();
-                                  }),
-                            ],
-                          ),
-                        ),
+                                                    : (obj.totalSteps.value /
+                                                        1500),
+                                                headerCount: obj
+                                                    .totalSteps.value
+                                                    .toStringAsFixed(2))
+                                            : index == 1
+                                                ? getList(
+                                                    isDark: false,
+                                                    header: "Calories Burned",
+                                                    endingPoint: 1000,
+                                                    image: AppImages.kCal,
+                                                    startingPoint: 0,
+                                                    percentageIndicator:
+                                                        (obj.totalCaloriesBurn
+                                                                        .value /
+                                                                    1000) >
+                                                                1
+                                                            ? 1
+                                                            : (obj.totalCaloriesBurn
+                                                                    .value /
+                                                                1000),
+                                                    headerCount: obj
+                                                        .totalCaloriesBurn.value
+                                                        .toStringAsFixed(2))
+                                                : Container();
+                                      }),
+                                ],
+                              ),
+                            ),
         ),
       ),
     );
@@ -98,7 +205,9 @@ class HealthInfo extends GetView<HealthController> {
       double percentageIndicator: 0.8,
       int startingPoint: 0,
       int endingPoint: 1500,
-      String image = AppImages.footSteps}) {
+      String image = AppImages.footSteps,
+      bool isDark = false}) {
+    print("List Called");
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Material(
@@ -141,9 +250,7 @@ class HealthInfo extends GetView<HealthController> {
                       animationDuration: 2500,
                       percent: percentageIndicator,
                       linearStrokeCap: LinearStrokeCap.roundAll,
-                      progressColor: ThemeService().theme == ThemeMode.dark
-                          ? Colors.white
-                          : Colors.black,
+                      progressColor: isDark ? Colors.white : Colors.black,
                     ),
                     Container(
                       width: (SizeConfig.screenWidth - 50 - 40 - 20),
@@ -179,14 +286,10 @@ class HealthInfo extends GetView<HealthController> {
                   ],
                 ),
               ),
-              Image.asset(
-                image,
-                height: 50,
-                width: 50,
-                color: ThemeService().theme == ThemeMode.dark
-                    ? Colors.white
-                    : Colors.black,
-              )
+              Image.asset(image,
+                  height: 50,
+                  width: 50,
+                  color: isDark ? Colors.white : Colors.black)
             ],
           ),
         ),

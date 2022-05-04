@@ -14,8 +14,6 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-
-    print(ThemeMode.system);
     return AnimatedSplashScreen(
       backgroundColor: SchedulerBinding.instance!.window.platformBrightness ==
               Brightness.dark
