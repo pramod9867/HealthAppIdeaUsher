@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:health/health.dart';
 import 'package:healthapp/app/modules/home/controllers/health_controller.dart';
 import 'package:healthapp/service/themeService.dart';
 import 'package:healthapp/utils/appImages/appimages.dart';
@@ -17,18 +18,26 @@ class HealthInfo extends GetView<HealthController> {
     return Scaffold(
       body: Obx(
         () => Container(
+
           child: obj.appState.value == AppState.Loading ||
                   obj.appState.value == AppState.Initial
               ? Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
                 )
               : obj.appState.value == AppState.AuthenticationFailed
                   ? Center(
-                      child: Container(child: Text("Authentication Failed !!")))
+                      child: Container(child: Text("Authentication Failed !!",style: TextStyle(
+                        fontFamily: 'Nunito'
+                      ),)))
                   : obj.appState.value == AppState.Failed
                       ? Center(
-                          child: Container(child: Text("Something Went Wrong")))
+                          child: Container(child: Text("Something Went Wrong",style: TextStyle(
+                              fontFamily: 'Nunito'
+                          ),),),)
                       : Container(
+                          // height: SizeConfig.screenHeight,
                           margin: EdgeInsets.symmetric(
                               vertical: 40, horizontal: 10),
                           child: Column(
@@ -45,43 +54,34 @@ class HealthInfo extends GetView<HealthController> {
                                 ),
                               ),
                               ListView.builder(
-                                  itemCount: obj.healthDataList.length,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: 2,
                                   shrinkWrap: true,
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    return index == 0
+                                    return index==0
                                         ? getList(
                                             percentageIndicator:
-                                                (obj.healthDataList[index]
-                                                                .value /
+                                                (obj.totalSteps.value/
                                                             1500) >
                                                         1
                                                     ? 1
-                                                    : (obj.healthDataList[index]
-                                                            .value /
+                                                    : (obj.totalSteps.value /
                                                         1500),
-                                            headerCount: obj
-                                                .healthDataList[index].value
-                                                .toString())
-                                        : index == 1
+                                            headerCount: obj.totalSteps.value.toStringAsFixed(2))
+                                        : index==1
                                             ? getList(
                                                 header: "Calories Burned",
                                                 endingPoint: 1000,
                                                 image: AppImages.kCal,
                                                 startingPoint: 0,
-                                                percentageIndicator: (obj
-                                                                .healthDataList[
-                                                                    index]
-                                                                .value /
+                                                percentageIndicator: (obj.totalCaloriesBurn.value /
                                                             1000) >
                                                         1
                                                     ? 1
-                                                    : (obj.healthDataList[index]
-                                                            .value /
+                                                    : (obj.totalCaloriesBurn.value /
                                                         1000),
-                                                headerCount: obj
-                                                    .healthDataList[index].value
-                                                    .toString())
+                                                headerCount: obj.totalCaloriesBurn.value.toStringAsFixed(2))
                                             : Container();
                                   }),
                             ],

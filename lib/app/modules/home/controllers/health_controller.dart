@@ -8,6 +8,8 @@ enum AppState { Loading, Failed, Success, AuthenticationFailed, Initial }
 class HealthController extends GetxController {
   Rx<AppState> appState = AppState.Initial.obs;
   RxList<HealthDataPoint> healthDataList = RxList([]);
+  RxDouble totalSteps = RxDouble(0);
+  RxDouble totalCaloriesBurn =RxDouble(0);
 
   @override
   void onInit() {
@@ -39,10 +41,23 @@ class HealthController extends GetxController {
         List<HealthDataPoint> healthData =
             await DataService.getHealthDataPoints();
 
+          // print("Health Data is.....");
+          // print(healthData);
+
         if (healthData.length>=0) {
+
+          for(int i=0;i<healthData.length;i++){
+            if(healthData[i].type==HealthDataType.STEPS){
+              totalSteps.value+=healthData[i].value.abs();
+            }else{
+              totalCaloriesBurn.value+=healthData[i].value.abs();
+            }
+          }
           appState(AppState.Success);
 
-          healthDataList(healthData);
+          // healthDataList(healthData);
+        }else{
+          appState(AppState.Success);
         }
       } catch (error) {
         appState(AppState.Failed);
